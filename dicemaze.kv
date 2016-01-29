@@ -1,0 +1,32 @@
+#:kivy 1.9.0
+#: import FadeTransition kivy.uix.screenmanager.FadeTransition
+
+ScreenManagement:
+    id: screen_manager
+    transition: FadeTransition()
+    MenuScreen:
+        name:"menu"
+    GameScreen:
+        name:"game"
+
+<MenuScreen>:
+    Button:
+        on_press: app.root.current = "game"
+        text: "Play !"
+
+<DiceMazeGame>:
+    canvas:
+        Color:
+            rgb: root.rgb(52, 152, 219)
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    GridLayout:
+        id: game_zone
+        size_hint: None, None
+        pos_hint: {'center_x':.5, 'center_y':.5}
+    Button:
+        id: pause
+        text: "Pause"
+        size_hint: .1,.1
+        pos_hint: {'top':1, 'right':1}
