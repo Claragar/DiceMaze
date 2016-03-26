@@ -1,9 +1,9 @@
 #:kivy 1.9.0
-#: import FadeTransition kivy.uix.screenmanager.FadeTransition
-
+#: import NoTransition kivy.uix.screenmanager.NoTransition
+#: import GridLayout kivy.uix.gridlayout.GridLayout
 ScreenManagement:
     id: screen_manager
-    transition: FadeTransition()
+    transition: NoTransition()
     MenuScreen:
         name:"menu"
     GameScreen:
@@ -11,13 +11,13 @@ ScreenManagement:
 
 <MenuScreen>:
     Button:
-        on_press: app.root.current = "game"
+        on_press: root.manager.current = "game"
         text: "Play !"
 
 <DiceMazeGame>:
     canvas:
         Color:
-            rgb: root.rgb(52, 152, 219)
+            rgb: app.rgb(52, 152, 219)
         Rectangle:
             pos: self.pos
             size: self.size
@@ -25,8 +25,30 @@ ScreenManagement:
         id: game_zone
         size_hint: None, None
         pos_hint: {'center_x':.5, 'center_y':.5}
+    Image:
+        id: dice
+        size_hint: None, None
+        source: "data/images/test.png"
     Button:
         id: pause
-        text: "Pause"
         size_hint: .1,.1
-        pos_hint: {'top':1, 'right':1}
+        pos_hint: {'top':.99, 'right':.99}
+        background_normal: "data/images/menu.png"
+        background_down: "data/images/menu.png"
+        border: 0,0,0,0
+        on_press: app.show_popup()
+
+<ResumeModal>:
+    id: popup
+    size_hint: .4, .4
+    BoxLayout:
+        orientation: 'vertical'
+        Button:
+            text:"Resume"
+            on_press: root.dismiss()
+        Button:
+            text:"Restart"
+            on_press: app.root.current = "game"; root.dismiss()
+        Button:
+            text:"Menu"
+            on_press: app.root.current = "menu"; root.dismiss()

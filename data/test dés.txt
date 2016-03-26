@@ -1,0 +1,14 @@
+(TOP,BOTTOM, FRONT, BEHIND, RIGHT, LEFT)
+(6,1,4,3,5,2)
+
+To right
+(2,5,4,3,6,1)
+
+To left
+(5,2,4,3,1,6)
+
+To front
+(3,4,6,1,5,2)
+
+To behind
+(4,3,1,6,5,2)
