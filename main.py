@@ -5,6 +5,7 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.image import Image
 from kivy.uix.modalview import ModalView
 from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.animation import Animation
 
 # Config.set('graphics', 'fullscreen', 'auto')
 Config.set('kivy', 'window_icon', 'data/images/face-01.png')
@@ -119,9 +120,7 @@ class DiceMazeGame(FloatLayout):
             for j in range(len(self.map_array[0])):
                 self.ids.game_zone.add_widget(Image(source='data/images/face-0{}.png'.format(self.map_array[i][j][0])))
                 if self.map_array[i][j][1] != 'X':
-                    self.dice_tiles_dict['START' if self.map_array[i][j][1] == 'S' else 'END' if self.map_array[i][j][
-                                                                                                     1] == 'E' else 'UNKNOWN'] = [
-                        j, i]
+                    self.dice_tiles_dict['START' if self.map_array[i][j][1] == 'S' else 'END' if self.map_array[i][j][1] == 'E' else 'UNKNOWN'] = [j, i]
 
         self.dice_tiles_dict['CURRENT'] = self.dice_tiles_dict['START']
 
@@ -167,7 +166,9 @@ class DiceMazeGame(FloatLayout):
         self.dice_pos_x = (self.width_window - self.width_game) / 2 + (self.dice_size[0] + self.ids.game_zone.spacing[0]) * self.dice_tiles_dict['CURRENT'][0]
         self.dice_pos_y = (self.height_window - self.height_game) / 2 + self.height_game - self.dice_size[1] - (self.dice_size[1] + self.ids.game_zone.spacing[1]) * self.dice_tiles_dict['CURRENT'][1]
 
-        self.ids.dice.pos = (self.dice_pos_x, self.dice_pos_y)
+        move = Animation(x=self.dice_pos_x, y=self.dice_pos_y, duration=.2)
+        move.start(self.ids.dice)
+        # self.ids.dice.pos = (self.dice_pos_x, self.dice_pos_y)
 
     def dice_roll(self, move):
         """
