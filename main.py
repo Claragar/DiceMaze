@@ -6,6 +6,7 @@ from kivy.uix.image import Image
 from kivy.uix.modalview import ModalView
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.animation import Animation
+from copy import deepcopy
 
 # Config.set('graphics', 'fullscreen', 'auto')
 Config.set('kivy', 'window_icon', 'data/images/face-01.png')
@@ -41,7 +42,7 @@ class DiceMazeGame(FloatLayout):
         Resize game grid layout based on the largest side (side * game_size_hint).
         """
 
-        self.ratio = self.cols / self.rows
+        ratio = self.cols / self.rows
 
         self.width_window = width_window
         self.height_window = height_window
@@ -51,11 +52,11 @@ class DiceMazeGame(FloatLayout):
         # print("height_window %s" % height_window)
 
         self.height_game = height_window * game_size_hint
-        self.width_game = self.height_game * self.ratio
+        self.width_game = self.height_game * ratio
 
-        if width_window <= self.width_game / self.ratio:
+        if width_window <= self.width_game / ratio:
             self.width_game = width_window * game_size_hint
-            self.height_game = self.width_game / self.ratio
+            self.height_game = self.width_game / ratio
 
         # print("width_game %s" % width_game)
         # print("height_game %s" % height_game)
@@ -96,19 +97,29 @@ class DiceMazeGame(FloatLayout):
         Adds Start and End tiles coordinates to dictionary.
         """
 
-        self.file = open('data/maps/map{}.txt'.format(map), 'r')
+        def tile_type(row, col):
+            """ Returns the name for each type of tile (start, end, unknown)"""
+            if self.map_array[row][col][1] == 'S':
+                return 'START'
+            else:
+                if self.map_array[row][col][1] == 'E':
+                    return 'END'
+                else:
+                    return 'UNKNOWN'
+
+        file = open('data/maps/map{}.txt'.format(map), 'r')
 
         self.dice_tiles_dict = {}
         self.map_array = []
-        self.map_lines = False
+        map_lines = False
 
-        for line in self.file:
+        for line in file:
             if "MAP END" in line:
-                self.map_lines = False
-            if self.map_lines:
+                map_lines = False
+            if map_lines:
                 self.map_array.append(line.split('\n')[0].split(' '))
             if "MAP START" in line:
-                self.map_lines = True
+                map_lines = True
 
         self.cols = len(self.map_array[0])
         self.rows = len(self.map_array)
@@ -116,24 +127,16 @@ class DiceMazeGame(FloatLayout):
         self.ids.game_zone.cols = self.cols
         self.ids.game_zone.rows = self.rows
 
-        for i in range(len(self.map_array)):
-            for j in range(len(self.map_array[0])):
+        for i in range(self.rows):
+            for j in range(self.cols):
                 self.ids.game_zone.add_widget(Image(source='data/images/face-0{}.png'.format(self.map_array[i][j][0])))
                 if self.map_array[i][j][1] != 'X':
-                    self.dice_tiles_dict['START' if self.map_array[i][j][1] == 'S' else 'END' if self.map_array[i][j][1] == 'E' else 'UNKNOWN'] = [j, i]
+                    self.dice_tiles_dict[tile_type(i, j)] = [j, i]
 
-        self.dice_tiles_dict['CURRENT'] = self.dice_tiles_dict['START']
+        self.dice_tiles_dict['CURRENT'] = deepcopy(self.dice_tiles_dict['START'])
 
     def generate_dice(self, map):
         """Generates all the faces using 3 entries (top/front/left)."""
-
-        self.file = open('data/maps/map{}.txt'.format(map), 'r')
-
-        self.face_dict = {"TOP": None, "BOTTOM": None, "FRONT": None, "BEHIND": None, "RIGHT": None, "LEFT": None}
-
-        for line in self.file:
-            if line.split(" ")[0] in self.face_dict.keys():
-                self.face_dict[line.split(" ")[0]] = line.split(" ")[1].rstrip()
 
         def opp_face(face):
             """Returns the opposite face."""
@@ -143,6 +146,14 @@ class DiceMazeGame(FloatLayout):
                 return "FRONT" if face == "BEHIND" else "BEHIND"
             if face in ("LEFT", "RIGHT"):
                 return "LEFT" if face == "RIGHT" else "RIGHT"
+
+        file = open('data/maps/map{}.txt'.format(map), 'r')
+
+        self.face_dict = {"TOP": None, "BOTTOM": None, "FRONT": None, "BEHIND": None, "RIGHT": None, "LEFT": None}
+
+        for line in file:
+            if line.split(" ")[0] in self.face_dict.keys():
+                self.face_dict[line.split(" ")[0]] = line.split(" ")[1].rstrip()
 
         for face_name, face_number in self.face_dict.items():
             if face_number is not None:
@@ -160,11 +171,19 @@ class DiceMazeGame(FloatLayout):
         """
         Calculates dice size and position.
         """
+
         self.dice_size = ((self.width_game - self.width_spacing) / self.cols, (self.height_game - self.height_spacing) / self.rows)
         self.ids.dice.size = self.dice_size
 
-        self.dice_pos_x = (self.width_window - self.width_game) / 2 + (self.dice_size[0] + self.ids.game_zone.spacing[0]) * self.dice_tiles_dict['CURRENT'][0]
-        self.dice_pos_y = (self.height_window - self.height_game) / 2 + self.height_game - self.dice_size[1] - (self.dice_size[1] + self.ids.game_zone.spacing[1]) * self.dice_tiles_dict['CURRENT'][1]
+        margin_x = (self.width_window - self.width_game) / 2
+        margin_y = (self.height_window - self.height_game) / 2
+
+        col_width = (self.dice_size[0] + self.ids.game_zone.spacing[0])
+        row_height = (self.dice_size[1] + self.ids.game_zone.spacing[1])
+
+        self.dice_pos_x = margin_x + col_width * self.dice_tiles_dict['CURRENT'][0]
+        self.dice_pos_y = margin_y + self.height_game - self.dice_size[1] - row_height * \
+                                                                            self.dice_tiles_dict['CURRENT'][1]
 
         move = Animation(x=self.dice_pos_x, y=self.dice_pos_y, duration=.2)
         move.start(self.ids.dice)
@@ -176,10 +195,11 @@ class DiceMazeGame(FloatLayout):
         Dice stays within the map and not outside.
         Top face needs to correspond with next tile.
         """
+
         if move == "up":
             if self.dice_tiles_dict['CURRENT'][1] > 0:
-                # if self.map_array[self.dice_tiles_dict['CURRENT'][1] - 1][self.dice_tiles_dict['CURRENT'][0]][0] == self.face_dict['TOP']:
-                    print("DEBUG UP")
+                up_tile = int(self.map_array[self.dice_tiles_dict['CURRENT'][1] - 1][self.dice_tiles_dict['CURRENT'][0]][0])
+                if up_tile == int(self.face_dict['TOP']) or up_tile == 7:
                     self.dice_tiles_dict['CURRENT'][1] -= 1
                     self.face_dict["TOP"], self.face_dict["BOTTOM"], self.face_dict["FRONT"], self.face_dict["BEHIND"] = \
                         self.face_dict["FRONT"], \
@@ -188,8 +208,8 @@ class DiceMazeGame(FloatLayout):
                         self.face_dict["TOP"]
         if move == "down":
             if self.dice_tiles_dict['CURRENT'][1] < self.rows - 1:
-                # if self.map_array[self.dice_tiles_dict['CURRENT'][1] + 1][self.dice_tiles_dict['CURRENT'][0]][0] == self.face_dict['TOP']:
-                    print("DEBUG DOWN")
+                down_tile = int(self.map_array[self.dice_tiles_dict['CURRENT'][1] + 1][self.dice_tiles_dict['CURRENT'][0]][0])
+                if down_tile == int(self.face_dict['TOP']) or down_tile == 7:
                     self.dice_tiles_dict['CURRENT'][1] += 1
                     self.face_dict["TOP"], self.face_dict["BOTTOM"], self.face_dict["FRONT"], self.face_dict["BEHIND"] = \
                         self.face_dict["BEHIND"], \
@@ -198,8 +218,8 @@ class DiceMazeGame(FloatLayout):
                         self.face_dict["BOTTOM"]
         if move == "left":
             if self.dice_tiles_dict['CURRENT'][0] > 0:
-                # if self.map_array[self.dice_tiles_dict['CURRENT'][1]][self.dice_tiles_dict['CURRENT'][0] - 1][0] == self.face_dict['TOP']:
-                    print("DEBUG LEFT")
+                left_tile = int(self.map_array[self.dice_tiles_dict['CURRENT'][1]][self.dice_tiles_dict['CURRENT'][0] - 1][0])
+                if left_tile == int(self.face_dict['TOP']) or left_tile == 7:
                     self.dice_tiles_dict['CURRENT'][0] -= 1
                     self.face_dict["TOP"], self.face_dict["BOTTOM"], self.face_dict["RIGHT"], self.face_dict["LEFT"] = \
                         self.face_dict["RIGHT"], \
@@ -208,15 +228,19 @@ class DiceMazeGame(FloatLayout):
                         self.face_dict["TOP"]
         if move == "right":
             if self.dice_tiles_dict['CURRENT'][0] < self.cols - 1:
-                # if self.map_array[self.dice_tiles_dict['CURRENT'][1]][self.dice_tiles_dict['CURRENT'][0] + 1][0] == self.face_dict['TOP']:
-                    print("DEBUG RIGHT")
+                right_tile = int(self.map_array[self.dice_tiles_dict['CURRENT'][1]][self.dice_tiles_dict['CURRENT'][0] + 1][0])
+                if right_tile == int(self.face_dict['TOP']) or right_tile == 7:
                     self.dice_tiles_dict['CURRENT'][0] += 1
                     self.face_dict["TOP"], self.face_dict["BOTTOM"], self.face_dict["RIGHT"], self.face_dict["LEFT"] = \
                         self.face_dict["LEFT"], \
                         self.face_dict["RIGHT"], \
                         self.face_dict["TOP"], \
                         self.face_dict["BOTTOM"]
+
         self.dice_move()
+
+        if self.dice_tiles_dict['CURRENT'] == self.dice_tiles_dict['END']:
+            print("BRAVO c'est gagné !! :D")
 
     def print_info(self):
         """
