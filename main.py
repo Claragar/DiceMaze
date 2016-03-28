@@ -34,8 +34,6 @@ class DiceMazeGame(FloatLayout):
 
         Window.bind(on_resize=self.game_resize)
 
-        # print(self.__dict__)
-
     def game_resize(self, window, width_window, height_window):
         """
         Fetch window object, window width and window height.
@@ -47,19 +45,12 @@ class DiceMazeGame(FloatLayout):
         self.width_window = width_window
         self.height_window = height_window
 
-        # print("===================== resize =====================")
-        # print("width_window %s" % width_window)
-        # print("height_window %s" % height_window)
-
         self.height_game = height_window * game_size_hint
         self.width_game = self.height_game * ratio
 
         if width_window <= self.width_game / ratio:
             self.width_game = width_window * game_size_hint
             self.height_game = self.width_game / ratio
-
-        # print("width_game %s" % width_game)
-        # print("height_game %s" % height_game)
 
         self.ids.game_zone.size = (self.width_game, self.height_game)
         self.ids.game_zone.spacing = width_window / 100
@@ -81,11 +72,11 @@ class DiceMazeGame(FloatLayout):
         """
         if keycode[1] == "up":
             self.dice_roll("up")
-        if keycode[1] == "down":
+        elif keycode[1] == "down":
             self.dice_roll("down")
-        if keycode[1] == "left":
+        elif keycode[1] == "left":
             self.dice_roll("left")
-        if keycode[1] == "right":
+        elif keycode[1] == "right":
             self.dice_roll("right")
 
         self.print_info()
@@ -116,9 +107,9 @@ class DiceMazeGame(FloatLayout):
         for line in file:
             if "MAP END" in line:
                 map_lines = False
-            if map_lines:
+            elif map_lines:
                 self.map_array.append(line.split('\n')[0].split(' '))
-            if "MAP START" in line:
+            elif "MAP START" in line:
                 map_lines = True
 
         self.cols = len(self.map_array[0])
@@ -136,15 +127,21 @@ class DiceMazeGame(FloatLayout):
         self.dice_tiles_dict['CURRENT'] = deepcopy(self.dice_tiles_dict['START'])
 
     def generate_dice(self, map):
-        """Generates all the faces using 3 entries (top/front/left)."""
+        """
+        Generates all the faces using 3 entries (top/front/left).
+        Fetches faces numbers from map.txt and sets them in face_dict.
+        Calculates opposite faces with opp_face function (2 opp faces = 7).
+        Checks for dice generation errors.
+        Sets dice image background.
+        """
 
         def opp_face(face):
             """Returns the opposite face."""
             if face in ("TOP", "BOTTOM"):
                 return "TOP" if face == "BOTTOM" else "BOTTOM"
-            if face in ("FRONT", "BEHIND"):
+            elif face in ("FRONT", "BEHIND"):
                 return "FRONT" if face == "BEHIND" else "BEHIND"
-            if face in ("LEFT", "RIGHT"):
+            elif face in ("LEFT", "RIGHT"):
                 return "LEFT" if face == "RIGHT" else "RIGHT"
 
         file = open('data/maps/map{}.txt'.format(map), 'r')
@@ -153,23 +150,26 @@ class DiceMazeGame(FloatLayout):
 
         for line in file:
             if line.split(" ")[0] in self.face_dict.keys():
-                self.face_dict[line.split(" ")[0]] = line.split(" ")[1].rstrip()
+                self.face_dict[line.split(" ")[0]] = int(line.split(" ")[1].rstrip())
 
         for face_name, face_number in self.face_dict.items():
             if face_number is not None:
-                self.face_dict[opp_face(face_name)] = 7 - int(self.face_dict[face_name])
+                self.face_dict[opp_face(face_name)] = 7 - self.face_dict[face_name]
 
         dice_generation_error = False
-
         for face_number in self.face_dict.values():
             if face_number is None:
                 dice_generation_error = True
+        if dice_generation_error:
+            print("Error with dice generation.")
 
-        if dice_generation_error: print("Error with dice generation.")
+        self.ids.dice.source = "data/images/white_face-0{}.png".format(self.face_dict["TOP"])
 
     def dice_move(self, *args):
         """
         Calculates dice size and position.
+        Changes dice image background.
+        Starts the moving animation.
         """
 
         self.dice_size = ((self.width_game - self.width_spacing) / self.cols, (self.height_game - self.height_spacing) / self.rows)
@@ -182,71 +182,90 @@ class DiceMazeGame(FloatLayout):
         row_height = (self.dice_size[1] + self.ids.game_zone.spacing[1])
 
         self.dice_pos_x = margin_x + col_width * self.dice_tiles_dict['CURRENT'][0]
-        self.dice_pos_y = margin_y + self.height_game - self.dice_size[1] - row_height * \
-                                                                            self.dice_tiles_dict['CURRENT'][1]
+        self.dice_pos_y = margin_y + self.height_game - self.dice_size[1] - row_height * self.dice_tiles_dict['CURRENT'][1]
+
+        self.ids.dice.source = "data/images/white_face-0{}.png".format(self.face_dict["TOP"])
 
         move = Animation(x=self.dice_pos_x, y=self.dice_pos_y, duration=.2)
         move.start(self.ids.dice)
-        # self.ids.dice.pos = (self.dice_pos_x, self.dice_pos_y)
 
     def dice_roll(self, move):
         """
-        Rotates dice faces and moves the dice according to keyboard inputs.
-        Dice stays within the map and not outside.
-        Top face needs to correspond with next tile.
+        Moves and rotates the dice according to keyboard inputs.
+        Top face needs to correspond with next tile to move.
+        Checks if the dice is stuck and can't move again.
+        Checks if the dice is on the end tile, player wins.
         """
 
-        if move == "up":
+        def tiles_around():
+            """Calculates what tiles are around the current position."""
+            up, down, left, right = None, None, None, None
+
             if self.dice_tiles_dict['CURRENT'][1] > 0:
-                up_tile = int(self.map_array[self.dice_tiles_dict['CURRENT'][1] - 1][self.dice_tiles_dict['CURRENT'][0]][0])
-                if up_tile == int(self.face_dict['TOP']) or up_tile == 7:
-                    self.dice_tiles_dict['CURRENT'][1] -= 1
-                    self.face_dict["TOP"], self.face_dict["BOTTOM"], self.face_dict["FRONT"], self.face_dict["BEHIND"] = \
-                        self.face_dict["FRONT"], \
-                        self.face_dict["BEHIND"], \
-                        self.face_dict["BOTTOM"], \
-                        self.face_dict["TOP"]
-        if move == "down":
+                up = int(self.map_array[self.dice_tiles_dict['CURRENT'][1] - 1][self.dice_tiles_dict['CURRENT'][0]][0])
+
             if self.dice_tiles_dict['CURRENT'][1] < self.rows - 1:
-                down_tile = int(self.map_array[self.dice_tiles_dict['CURRENT'][1] + 1][self.dice_tiles_dict['CURRENT'][0]][0])
-                if down_tile == int(self.face_dict['TOP']) or down_tile == 7:
-                    self.dice_tiles_dict['CURRENT'][1] += 1
-                    self.face_dict["TOP"], self.face_dict["BOTTOM"], self.face_dict["FRONT"], self.face_dict["BEHIND"] = \
-                        self.face_dict["BEHIND"], \
-                        self.face_dict["FRONT"], \
-                        self.face_dict["TOP"], \
-                        self.face_dict["BOTTOM"]
-        if move == "left":
+                down = int(self.map_array[self.dice_tiles_dict['CURRENT'][1] + 1][self.dice_tiles_dict['CURRENT'][0]][0])
+
             if self.dice_tiles_dict['CURRENT'][0] > 0:
-                left_tile = int(self.map_array[self.dice_tiles_dict['CURRENT'][1]][self.dice_tiles_dict['CURRENT'][0] - 1][0])
-                if left_tile == int(self.face_dict['TOP']) or left_tile == 7:
-                    self.dice_tiles_dict['CURRENT'][0] -= 1
-                    self.face_dict["TOP"], self.face_dict["BOTTOM"], self.face_dict["RIGHT"], self.face_dict["LEFT"] = \
-                        self.face_dict["RIGHT"], \
-                        self.face_dict["LEFT"], \
-                        self.face_dict["BOTTOM"], \
-                        self.face_dict["TOP"]
-        if move == "right":
+                left = int(self.map_array[self.dice_tiles_dict['CURRENT'][1]][self.dice_tiles_dict['CURRENT'][0] - 1][0])
+
             if self.dice_tiles_dict['CURRENT'][0] < self.cols - 1:
-                right_tile = int(self.map_array[self.dice_tiles_dict['CURRENT'][1]][self.dice_tiles_dict['CURRENT'][0] + 1][0])
-                if right_tile == int(self.face_dict['TOP']) or right_tile == 7:
-                    self.dice_tiles_dict['CURRENT'][0] += 1
-                    self.face_dict["TOP"], self.face_dict["BOTTOM"], self.face_dict["RIGHT"], self.face_dict["LEFT"] = \
-                        self.face_dict["LEFT"], \
-                        self.face_dict["RIGHT"], \
-                        self.face_dict["TOP"], \
-                        self.face_dict["BOTTOM"]
+                right = int(self.map_array[self.dice_tiles_dict['CURRENT'][1]][self.dice_tiles_dict['CURRENT'][0] + 1][0])
+
+            return up, down, left, right
+
+        up_tile, down_tile, left_tile, right_tile = tiles_around()
+
+        if move == "up":
+            if up_tile is not None and up_tile == self.face_dict['TOP'] or up_tile == 7:
+                self.dice_tiles_dict['CURRENT'][1] -= 1
+                self.face_dict["TOP"], self.face_dict["BOTTOM"], self.face_dict["FRONT"], self.face_dict["BEHIND"] = \
+                    self.face_dict["FRONT"], \
+                    self.face_dict["BEHIND"], \
+                    self.face_dict["BOTTOM"], \
+                    self.face_dict["TOP"]
+        elif move == "down":
+            if down_tile is not None and down_tile == self.face_dict['TOP'] or down_tile == 7:
+                self.dice_tiles_dict['CURRENT'][1] += 1
+                self.face_dict["TOP"], self.face_dict["BOTTOM"], self.face_dict["FRONT"], self.face_dict["BEHIND"] = \
+                    self.face_dict["BEHIND"], \
+                    self.face_dict["FRONT"], \
+                    self.face_dict["TOP"], \
+                    self.face_dict["BOTTOM"]
+        elif move == "left":
+            if left_tile is not None and left_tile == self.face_dict['TOP'] or left_tile == 7:
+                self.dice_tiles_dict['CURRENT'][0] -= 1
+                self.face_dict["TOP"], self.face_dict["BOTTOM"], self.face_dict["RIGHT"], self.face_dict["LEFT"] = \
+                    self.face_dict["RIGHT"], \
+                    self.face_dict["LEFT"], \
+                    self.face_dict["BOTTOM"], \
+                    self.face_dict["TOP"]
+        elif move == "right":
+            if right_tile is not None and right_tile == self.face_dict['TOP'] or right_tile == 7:
+                self.dice_tiles_dict['CURRENT'][0] += 1
+                self.face_dict["TOP"], self.face_dict["BOTTOM"], self.face_dict["RIGHT"], self.face_dict["LEFT"] = \
+                    self.face_dict["LEFT"], \
+                    self.face_dict["RIGHT"], \
+                    self.face_dict["TOP"], \
+                    self.face_dict["BOTTOM"]
 
         self.dice_move()
 
+        up_tile, down_tile, left_tile, right_tile = tiles_around()
+
         if self.dice_tiles_dict['CURRENT'] == self.dice_tiles_dict['END']:
-            print("BRAVO c'est gagné !! :D")
+            print("Gagné !")
+        elif int(self.face_dict["TOP"]) not in (up_tile, down_tile, left_tile, right_tile):
+            print("Bloqué !")
 
     def print_info(self):
         """
-        Prints info about dictionaries (faces, start/end)
-        Prints info about window, game and dice size.
-        Prints info about dice position.
+        Prints info about:
+        - dictionaries (faces, start/end)
+        - window, game and dice size
+        - dice position
+        - self variables
         """
 
         separation = "==============================================="
@@ -254,26 +273,28 @@ class DiceMazeGame(FloatLayout):
         print("INFO")
         print(separation)
 
-        print("DICE FACES || %s" % self.face_dict)
-        print("DICE TILES || %s" % self.dice_tiles_dict)
-        print("MAP || %s" % self.map_array)
+        print("DICE FACES || {}".format(self.face_dict))
+        print("DICE TILES || {}".format(self.dice_tiles_dict))
+        print("MAP || {}".format(self.map_array))
         print(separation)
 
-        print("WINDOW width || %s" % self.width_window)
-        print("WINDOW height || %s" % self.height_window)
+        print("WINDOW width || {}".format(self.width_window))
+        print("WINDOW height || {}".format(self.height_window))
         print(separation)
 
-        print("GAME width || %s" % self.width_game)
-        print("GAME height || %s" % self.height_game)
+        print("GAME width || {}".format(self.width_game))
+        print("GAME height || {}".format(self.height_game))
         print(separation)
 
-        print("DICE width || %s" % self.dice_size[0])
-        print("DICE height || %s" % self.dice_size[1])
+        print("DICE width || {}".format(self.dice_size[0]))
+        print("DICE height || {}".format(self.dice_size[1]))
+        print("DICE pos_x || {}".format(self.dice_pos_x))
+        print("DICE pos_y || {}".format(self.dice_pos_y))
         print(separation)
 
-        print("DICE pos_x || %s" % self.dice_pos_x)
-        print("DICE pos_y || %s" % self.dice_pos_y)
-        print(separation)
+        # for key in sorted(self.__dict__):
+        #     print("{}: {}".format(key, self.__dict__[key]))
+        # print(separation)
 
 
 class ScreenManagement(ScreenManager):
