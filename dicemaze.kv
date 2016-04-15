@@ -1,13 +1,16 @@
 #:kivy 1.9.0
 #: import NoTransition kivy.uix.screenmanager.NoTransition
 #: import GridLayout kivy.uix.gridlayout.GridLayout
+
 ScreenManagement:
     id: screen_manager
     transition: NoTransition()
     MenuScreen:
         name:"menu"
+        on_pre_enter: app.screen_change("menu")
     GameScreen:
         name:"game"
+        on_pre_enter: app.screen_change("game")
 
 <MenuScreen>:
     Button:
@@ -28,28 +31,30 @@ ScreenManagement:
     Image:
         id: dice
         size_hint: None, None
+        allow_stretch: True
         anim_delay: .02
         anim_loop: 3
     Button:
         id: pause
         size_hint: .1,.1
         pos_hint: {'top':.99, 'right':.99}
-        background_normal: "data/images/menu.png"
-        background_down: "data/images/menu.png"
-        border: 0,0,0,0
         on_press: app.show_popup()
 
 <ResumeModal>:
     id: popup
     size_hint: .4, .4
     BoxLayout:
+        id: boxlayout
         orientation: 'vertical'
         Button:
+            id: resume
             text:"Resume"
             on_press: root.dismiss()
         Button:
+            id: restart
             text:"Restart"
             on_press: app.root.current = "game"; root.dismiss()
         Button:
+            id: menu
             text:"Menu"
             on_press: app.root.current = "menu"; root.dismiss()

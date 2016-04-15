@@ -6,6 +6,7 @@ from kivy.uix.image import Image
 from kivy.uix.modalview import ModalView
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.animation import Animation
+from kivy.uix.label import Label
 from copy import deepcopy
 
 # Config.set('graphics', 'fullscreen', 'auto')
@@ -16,6 +17,7 @@ Config.write()
 
 game_size_hint = .8
 map_id = 1
+map_color = "red"
 
 
 class DiceMazeGame(FloatLayout):
@@ -27,6 +29,7 @@ class DiceMazeGame(FloatLayout):
         self._keyboard = Window.request_keyboard(self._keyboard_closed, self)
         self._keyboard.bind(on_key_down=self._on_keyboard_down)
 
+        self.map_color = map_color
         self.generate_map(map_id)
         self.generate_dice(map_id)
 
@@ -100,6 +103,8 @@ class DiceMazeGame(FloatLayout):
 
         file = open('data/maps/map{}.txt'.format(map), 'r')
 
+        self.popup_closed = True
+
         self.dice_tiles_dict = {}
         self.map_array = []
         map_lines = False
@@ -120,11 +125,21 @@ class DiceMazeGame(FloatLayout):
 
         for i in range(self.rows):
             for j in range(self.cols):
-                self.ids.game_zone.add_widget(Image(source='data/images/face-0{}.png'.format(self.map_array[i][j][0])))
                 if self.map_array[i][j][1] != 'X':
                     self.dice_tiles_dict[tile_type(i, j)] = [j, i]
+                if self.map_array[i][j][1] == 'E':
+                    self.ids.game_zone.add_widget(Image(
+                        source='data/images/{}/end-face-0{}.png'.format(self.map_color, self.map_array[i][j][0]),
+                        allow_stretch=True))
+                else:
+                    self.ids.game_zone.add_widget(Image(
+                        source='data/images/{}/face-0{}.png'.format(self.map_color, self.map_array[i][j][0]),
+                        allow_stretch=True))
 
         self.dice_tiles_dict['CURRENT'] = deepcopy(self.dice_tiles_dict['START'])
+
+        self.ids.pause.background_normal = "data/images/{}/menu.png".format(self.map_color)
+        self.ids.pause.background_down = "data/images/{}/menu.png".format(self.map_color)
 
     def generate_dice(self, map):
         """
@@ -163,7 +178,7 @@ class DiceMazeGame(FloatLayout):
         if dice_generation_error:
             print("Error with dice generation.")
 
-        self.ids.dice.source = "data/images/white_face-0{}.png".format(self.face_dict["TOP"])
+        self.ids.dice.source = "data/images/{}/white_face-0{}.png".format(self.map_color, self.face_dict["TOP"])
 
     def dice_move(self, *args):
         """
@@ -184,7 +199,7 @@ class DiceMazeGame(FloatLayout):
         self.dice_pos_x = margin_x + col_width * self.dice_tiles_dict['CURRENT'][0]
         self.dice_pos_y = margin_y + self.height_game - self.dice_size[1] - row_height * self.dice_tiles_dict['CURRENT'][1]
 
-        self.ids.dice.source = "data/images/white_face-0{}.png".format(self.face_dict["TOP"])
+        self.ids.dice.source = "data/images/{}/white_face-0{}.png".format(self.map_color, self.face_dict["TOP"])
 
         move = Animation(x=self.dice_pos_x, y=self.dice_pos_y, duration=.2)
         move.start(self.ids.dice)
@@ -254,10 +269,18 @@ class DiceMazeGame(FloatLayout):
 
         up_tile, down_tile, left_tile, right_tile = tiles_around()
 
-        if self.dice_tiles_dict['CURRENT'] == self.dice_tiles_dict['END']:
+        popup = ModalView(size_hint=(.4, .4), auto_dismiss=False)
+
+        if self.dice_tiles_dict['CURRENT'] == self.dice_tiles_dict['END'] and self.popup_closed:
             print("Gagné !")
-        elif int(self.face_dict["TOP"]) not in (up_tile, down_tile, left_tile, right_tile):
+            self.popup_closed = False
+            popup.add_widget(Label(text="Congratulations, you won!"))
+            popup.open()
+        elif self.face_dict["TOP"] not in (up_tile, down_tile, left_tile, right_tile) and 7 not in (up_tile, down_tile, left_tile, right_tile) and self.popup_closed:
             print("Bloqué !")
+            self.popup_closed = False
+            popup.add_widget(Label(text="Are you stuck? You lost!"))
+            popup.open()
 
     def print_info(self):
         """
@@ -303,6 +326,8 @@ class ScreenManagement(ScreenManager):
 
 class GameScreen(Screen):
     def __init__(self, **kwargs):
+        """ Constructs the float layout named DiceMazeGame."""
+
         super(GameScreen, self).__init__(**kwargs)
         self.add_widget(DiceMazeGame())
 
@@ -325,6 +350,14 @@ class DiceMazeApp(App):
         """Opens ResumeModal popup. Called from .kv"""
         p = ResumeModal()
         p.open()
+        return p
+
+    def screen_change(self, screen):
+        print("Screen has changed to {}".format(screen))
+        # if screen == "game":
+        #     game_screen = GameScreen()
+        #     game_screen.clear_widgets()
+        #     game_screen.add_widget(DiceMazeGame())
 
     def build(self):
         return self.root
