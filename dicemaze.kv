@@ -1,21 +1,32 @@
 #:kivy 1.9.0
 #: import NoTransition kivy.uix.screenmanager.NoTransition
 #: import GridLayout kivy.uix.gridlayout.GridLayout
+#: import BoxLayout kivy.uix.boxlayout.BoxLayout
 
 ScreenManagement:
     id: screen_manager
     transition: NoTransition()
     MenuScreen:
         name:"menu"
-        on_pre_enter: app.screen_change("menu")
     GameScreen:
         name:"game"
-        on_pre_enter: app.screen_change("game")
 
 <MenuScreen>:
     Button:
         on_press: root.manager.current = "game"
         text: "Play !"
+        pos_hint: {'center_x':.5, 'top':1}
+        size_hint_y: .5
+    BoxLayout:
+        orientation: "horizontal"
+        pos_hint_y: {'center_x':.5, 'top':0}
+        size_hint_y: .5
+        Label:
+            text: "Hello"
+        Label:
+            text: "And"
+        Label:
+            text: "Welcome"
 
 <DiceMazeGame>:
     canvas:
@@ -35,26 +46,54 @@ ScreenManagement:
         anim_delay: .02
         anim_loop: 3
     Button:
+        id: undo
+        size_hint: None, None
+        background_color: 0,0,0,0
+        on_press: root.dice_move("undo"); root.print_info()
+        Image:
+            id: undo_image
+            size: self.parent.size
+            pos: self.parent.pos
+        Label:
+            id: undo_try
+            font_name: 'data/fonts/Square.ttf'
+            text_size: self.size
+            pos: self.parent.pos
+            size: self.parent.size
+            halign: 'right'
+            valign: 'top'
+    Button:
         id: pause
-        size_hint: .1,.1
-        pos_hint: {'top':.99, 'right':.99}
+        size_hint: None, None
+        background_color: 0,0,0,0
         on_press: app.show_popup()
+        Image:
+            id: pause_image
+            size: self.parent.size
+            pos: self.parent.pos
 
 <ResumeModal>:
     id: popup
-    size_hint: .4, .4
+    size_hint: .6, .6
     BoxLayout:
         id: boxlayout
         orientation: 'vertical'
+        Label:
+            text: "Pause"
+            font_name: 'data/fonts/Dimitri.ttf'
+            font_size: 60
         Button:
             id: resume
             text:"Resume"
+            font_name: 'data/fonts/AldotheApache.ttf'
             on_press: root.dismiss()
         Button:
             id: restart
             text:"Restart"
-            on_press: app.root.current = "game"; root.dismiss()
+            font_name: 'data/fonts/AldotheApache.ttf'
+            on_press: app.root.current = "menu"; app.root.current = "game"; root.dismiss()
         Button:
             id: menu
             text:"Menu"
+            font_name: 'data/fonts/AldotheApache.ttf'
             on_press: app.root.current = "menu"; root.dismiss()

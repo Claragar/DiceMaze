@@ -12,6 +12,8 @@ from copy import deepcopy
 # Config.set('graphics', 'fullscreen', 'auto')
 Config.set('kivy', 'window_icon', 'data/images/face-01.png')
 Config.set('kivy', 'log_level', 'info')
+Config.set('graphics', 'height', 720)
+Config.set('graphics', 'width', 480)
 # Config.set('kivy', 'log_level', 'critical')
 Config.write()
 
@@ -29,7 +31,11 @@ class DiceMazeGame(FloatLayout):
         self._keyboard = Window.request_keyboard(self._keyboard_closed, self)
         self._keyboard.bind(on_key_down=self._on_keyboard_down)
 
+        self.popup_closed = True
+        self.undo_current_try = 0
+        self.move_back_history = []
         self.map_color = map_color
+
         self.generate_map(map_id)
         self.generate_dice(map_id)
 
@@ -41,8 +47,10 @@ class DiceMazeGame(FloatLayout):
         """
         Fetch window object, window width and window height.
         Resize game grid layout based on the largest side (side * game_size_hint).
+        Calculates dice coordinates (x, y) and size.
         """
 
+        # Game resizing
         ratio = self.cols / self.rows
 
         self.width_window = width_window
@@ -51,17 +59,38 @@ class DiceMazeGame(FloatLayout):
         self.height_game = height_window * game_size_hint
         self.width_game = self.height_game * ratio
 
-        if width_window <= self.width_game / ratio:
+        if width_window <= self.width_game / game_size_hint:
             self.width_game = width_window * game_size_hint
             self.height_game = self.width_game / ratio
 
         self.ids.game_zone.size = (self.width_game, self.height_game)
         self.ids.game_zone.spacing = width_window / 100
 
-        self.height_spacing = (self.rows - 1) * self.ids.game_zone.spacing[1]
-        self.width_spacing = (self.cols - 1) * self.ids.game_zone.spacing[0]
+        # Dice coordinates and size calculation
+        total_height_spacing = (self.rows - 1) * self.ids.game_zone.spacing[1]
+        total_width_spacing = (self.cols - 1) * self.ids.game_zone.spacing[0]
 
-        self.dice_move()
+        self.margin_x = (self.width_window - self.width_game) / 2
+        self.margin_y = (self.height_window - self.height_game) / 2
+
+        self.dice_size = ((self.width_game - total_width_spacing) / self.cols, (self.height_game - total_height_spacing) / self.rows)
+        self.ids.dice.size = self.dice_size
+
+        self.col_width = (self.dice_size[0] + self.ids.game_zone.spacing[0])
+        self.row_height = (self.dice_size[1] + self.ids.game_zone.spacing[1])
+
+        self.dice_pos_x = self.margin_x + self.col_width * self.dice_tiles_dict['CURRENT'][0]
+        self.dice_pos_y = self.margin_y + self.height_game - self.dice_size[1] - self.row_height * self.dice_tiles_dict['CURRENT'][1]
+
+        self.ids.dice.pos = self.dice_pos_x, self.dice_pos_y
+
+        self.ids.pause.size = self.dice_size if self.margin_y / 2 > self.dice_size[1] else (self.margin_y / 2, self.margin_y / 2)
+        self.ids.undo.size = self.ids.pause.size
+
+        self.ids.pause.pos = self.margin_x + self.width_game - self.ids.pause.size[0], self.height_window - self.ids.pause.size[1] - (self.margin_y - self.ids.pause.size[1]) / 2
+        self.ids.undo.pos = self.ids.pause.pos[0] - self.ids.undo.size[0] * 2, self.ids.pause.pos[1]
+
+        self.dice_move(None)
         self.print_info()
 
     def _keyboard_closed(self):
@@ -74,13 +103,13 @@ class DiceMazeGame(FloatLayout):
         Dice rolls and moves according to the key pressed.
         """
         if keycode[1] == "up":
-            self.dice_roll("up")
+            self.dice_move("up")
         elif keycode[1] == "down":
-            self.dice_roll("down")
+            self.dice_move("down")
         elif keycode[1] == "left":
-            self.dice_roll("left")
+            self.dice_move("left")
         elif keycode[1] == "right":
-            self.dice_roll("right")
+            self.dice_move("right")
 
         self.print_info()
 
@@ -102,8 +131,6 @@ class DiceMazeGame(FloatLayout):
                     return 'UNKNOWN'
 
         file = open('data/maps/map{}.txt'.format(map), 'r')
-
-        self.popup_closed = True
 
         self.dice_tiles_dict = {}
         self.map_array = []
@@ -138,8 +165,10 @@ class DiceMazeGame(FloatLayout):
 
         self.dice_tiles_dict['CURRENT'] = deepcopy(self.dice_tiles_dict['START'])
 
-        self.ids.pause.background_normal = "data/images/{}/menu.png".format(self.map_color)
-        self.ids.pause.background_down = "data/images/{}/menu.png".format(self.map_color)
+        self.ids.pause_image.source = "data/images/{}/menu.png".format(self.map_color)
+        self.ids.undo_image.source = "data/images/{}/undo.png".format(self.map_color)
+
+
 
     def generate_dice(self, map):
         """
@@ -178,42 +207,20 @@ class DiceMazeGame(FloatLayout):
         if dice_generation_error:
             print("Error with dice generation.")
 
-        self.ids.dice.source = "data/images/{}/white_face-0{}.png".format(self.map_color, self.face_dict["TOP"])
+        self.ids.dice.source = "data/images/{}/white-face-0{}.png".format(self.map_color, self.face_dict["TOP"])
 
-    def dice_move(self, *args):
-        """
-        Calculates dice size and position.
-        Changes dice image background.
-        Starts the moving animation.
-        """
-
-        self.dice_size = ((self.width_game - self.width_spacing) / self.cols, (self.height_game - self.height_spacing) / self.rows)
-        self.ids.dice.size = self.dice_size
-
-        margin_x = (self.width_window - self.width_game) / 2
-        margin_y = (self.height_window - self.height_game) / 2
-
-        col_width = (self.dice_size[0] + self.ids.game_zone.spacing[0])
-        row_height = (self.dice_size[1] + self.ids.game_zone.spacing[1])
-
-        self.dice_pos_x = margin_x + col_width * self.dice_tiles_dict['CURRENT'][0]
-        self.dice_pos_y = margin_y + self.height_game - self.dice_size[1] - row_height * self.dice_tiles_dict['CURRENT'][1]
-
-        self.ids.dice.source = "data/images/{}/white_face-0{}.png".format(self.map_color, self.face_dict["TOP"])
-
-        move = Animation(x=self.dice_pos_x, y=self.dice_pos_y, duration=.2)
-        move.start(self.ids.dice)
-
-    def dice_roll(self, move):
+    def dice_move(self, move):
         """
         Moves and rotates the dice according to keyboard inputs.
         Top face needs to correspond with next tile to move.
-        Checks if the dice is stuck and can't move again.
-        Checks if the dice is on the end tile, player wins.
+        Changes current position and rotates faces.
+        Creates a history to undo last move.
+        Calls dice_move for dice coordinates and starts animation.
+        Shows popup when dice is stuck or win.
         """
 
         def tiles_around():
-            """Calculates what tiles are around the current position."""
+            """Calculates which tiles are around current position."""
             up, down, left, right = None, None, None, None
 
             if self.dice_tiles_dict['CURRENT'][1] > 0:
@@ -230,10 +237,22 @@ class DiceMazeGame(FloatLayout):
 
             return up, down, left, right
 
+        # Updates current position and dice faces.
+        # Keeps a history to undo move (move_back).
         up_tile, down_tile, left_tile, right_tile = tiles_around()
+        undo = False
+        undo_max_try = 3
+
+        if move == "undo" and self.move_back_history and self.undo_current_try < undo_max_try:
+            # pop() removes and returns last element in list
+            move = self.move_back_history.pop()
+            undo = True
+            self.undo_current_try += 1
 
         if move == "up":
-            if up_tile is not None and up_tile == self.face_dict['TOP'] or up_tile == 7:
+            if up_tile is not None and up_tile == self.face_dict['TOP'] or up_tile == 7 or undo:
+                if not undo:
+                    self.move_back_history.append("down")
                 self.dice_tiles_dict['CURRENT'][1] -= 1
                 self.face_dict["TOP"], self.face_dict["BOTTOM"], self.face_dict["FRONT"], self.face_dict["BEHIND"] = \
                     self.face_dict["FRONT"], \
@@ -241,7 +260,9 @@ class DiceMazeGame(FloatLayout):
                     self.face_dict["BOTTOM"], \
                     self.face_dict["TOP"]
         elif move == "down":
-            if down_tile is not None and down_tile == self.face_dict['TOP'] or down_tile == 7:
+            if down_tile is not None and down_tile == self.face_dict['TOP'] or down_tile == 7 or undo:
+                if not undo:
+                    self.move_back_history.append("up")
                 self.dice_tiles_dict['CURRENT'][1] += 1
                 self.face_dict["TOP"], self.face_dict["BOTTOM"], self.face_dict["FRONT"], self.face_dict["BEHIND"] = \
                     self.face_dict["BEHIND"], \
@@ -249,7 +270,9 @@ class DiceMazeGame(FloatLayout):
                     self.face_dict["TOP"], \
                     self.face_dict["BOTTOM"]
         elif move == "left":
-            if left_tile is not None and left_tile == self.face_dict['TOP'] or left_tile == 7:
+            if left_tile is not None and left_tile == self.face_dict['TOP'] or left_tile == 7 or undo:
+                if not undo:
+                    self.move_back_history.append("right")
                 self.dice_tiles_dict['CURRENT'][0] -= 1
                 self.face_dict["TOP"], self.face_dict["BOTTOM"], self.face_dict["RIGHT"], self.face_dict["LEFT"] = \
                     self.face_dict["RIGHT"], \
@@ -257,7 +280,9 @@ class DiceMazeGame(FloatLayout):
                     self.face_dict["BOTTOM"], \
                     self.face_dict["TOP"]
         elif move == "right":
-            if right_tile is not None and right_tile == self.face_dict['TOP'] or right_tile == 7:
+            if right_tile is not None and right_tile == self.face_dict['TOP'] or right_tile == 7 or undo:
+                if not undo:
+                    self.move_back_history.append("left")
                 self.dice_tiles_dict['CURRENT'][0] += 1
                 self.face_dict["TOP"], self.face_dict["BOTTOM"], self.face_dict["RIGHT"], self.face_dict["LEFT"] = \
                     self.face_dict["LEFT"], \
@@ -265,8 +290,17 @@ class DiceMazeGame(FloatLayout):
                     self.face_dict["TOP"], \
                     self.face_dict["BOTTOM"]
 
-        self.dice_move()
+        # Calculates new position and top face, animation to new position.
+        self.dice_pos_x = self.margin_x + self.col_width * self.dice_tiles_dict['CURRENT'][0]
+        self.dice_pos_y = self.margin_y + self.height_game - self.dice_size[1] - self.row_height * self.dice_tiles_dict['CURRENT'][1]
 
+        self.ids.dice.source = "data/images/{}/white-face-0{}.png".format(self.map_color, self.face_dict["TOP"])
+        self.ids.undo_try.text = str(undo_max_try - self.undo_current_try)
+
+        move = Animation(x=self.dice_pos_x, y=self.dice_pos_y, duration=.2)
+        move.start(self.ids.dice)
+
+        # Popup opens when dice is stuck or player wins.
         up_tile, down_tile, left_tile, right_tile = tiles_around()
 
         popup = ModalView(size_hint=(.4, .4), auto_dismiss=False)
@@ -288,6 +322,7 @@ class DiceMazeGame(FloatLayout):
         - dictionaries (faces, start/end)
         - window, game and dice size
         - dice position
+        - move history (undo)
         - self variables
         """
 
@@ -296,9 +331,19 @@ class DiceMazeGame(FloatLayout):
         print("INFO")
         print(separation)
 
-        print("DICE FACES || {}".format(self.face_dict))
-        print("DICE TILES || {}".format(self.dice_tiles_dict))
-        print("MAP || {}".format(self.map_array))
+        print("DICE FACES")
+        for k, v in self.face_dict.items():
+            print("{}{} => {}".format(" "*10,k, v))
+        print(separation)
+
+        print("DICE TILE POSITION")
+        for k, v in self.dice_tiles_dict.items():
+            print("{}{} => {}".format(" "*10,k, v))
+        print(separation)
+
+        print("MAP")
+        for line in self.map_array:
+            print("{}{}".format(" "*3, line))
         print(separation)
 
         print("WINDOW width || {}".format(self.width_window))
@@ -315,6 +360,9 @@ class DiceMazeGame(FloatLayout):
         print("DICE pos_y || {}".format(self.dice_pos_y))
         print(separation)
 
+        print("Undo history || {}".format(self.move_back_history))
+        print(separation)
+
         # for key in sorted(self.__dict__):
         #     print("{}: {}".format(key, self.__dict__[key]))
         # print(separation)
@@ -325,11 +373,15 @@ class ScreenManagement(ScreenManager):
 
 
 class GameScreen(Screen):
-    def __init__(self, **kwargs):
-        """ Constructs the float layout named DiceMazeGame."""
-
-        super(GameScreen, self).__init__(**kwargs)
+    """
+    Overwrite kivy methods (on_pre_enter, on_leave)
+    Adds DiceMazeGame to game screen each time it's entered.
+    """
+    def on_pre_enter(self):
         self.add_widget(DiceMazeGame())
+
+    def on_leave(self):
+        self.clear_widgets()
 
 
 class MenuScreen(Screen):
@@ -351,13 +403,6 @@ class DiceMazeApp(App):
         p = ResumeModal()
         p.open()
         return p
-
-    def screen_change(self, screen):
-        print("Screen has changed to {}".format(screen))
-        # if screen == "game":
-        #     game_screen = GameScreen()
-        #     game_screen.clear_widgets()
-        #     game_screen.add_widget(DiceMazeGame())
 
     def build(self):
         return self.root
