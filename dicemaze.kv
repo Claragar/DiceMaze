@@ -10,23 +10,94 @@ ScreenManagement:
         name:"menu"
     GameScreen:
         name:"game"
+    MapScreen:
+        name:"maps"
 
 <MenuScreen>:
-    Button:
-        on_press: root.manager.current = "game"
-        text: "Play !"
-        pos_hint: {'center_x':.5, 'top':1}
-        size_hint_y: .5
+    canvas:
+        Color:
+            rgb: app.rgb(52, 152, 219)
+        Rectangle:
+            pos: self.pos
+            size: self.size
     BoxLayout:
-        orientation: "horizontal"
-        pos_hint_y: {'center_x':.5, 'top':0}
-        size_hint_y: .5
+        orientation: "vertical"
+        pos_hint: {'center_x':.5, 'top':1}
+        size_hint_y: .75
         Label:
-            text: "Hello"
+            text: "Dice Maze"
+            font_name: 'data/fonts/Dimitri.ttf'
+            font_size: 60
+            background_color: (1,0.5,0.5,1)
         Label:
-            text: "And"
+            text: "Choose a theme"
+            font_name: 'data/fonts/AldotheApache.ttf'
+        BoxLayout:
+            orientation:"horizontal"
+            size_hint_x: .5
+            pos_hint: {'center_x':.5, 'top':1}
+            Button:
+                background_color: 0,0,0,0
+                on_press: root.change_theme("red")
+                Image:
+                    id: red
+                    source: 'data/images/menu/red-theme.png'
+                    pos: self.parent.pos
+                    size: self.parent.size
+            Button:
+                background_color: 0,0,0,0
+                on_press: root.change_theme("green")
+                Image:
+                    id: green
+                    source: 'data/images/menu/green-theme.png'
+                    pos: self.parent.pos
+                    size: self.parent.size
         Label:
-            text: "Welcome"
+            text: "Choose a map"
+            font_name: 'data/fonts/AldotheApache.ttf'
+        Button:
+            size_hint_x: .3
+            pos_hint: {'center_x':.5, 'top':1}
+            on_press: app.root.current = "maps"
+            canvas:
+                Color:
+                    rgb: app.rgb(52, 73, 94)
+                Rectangle:
+
+                    pos: self.pos
+                    size: self.size
+            Label:
+                text:"maps"
+                font_name: 'data/fonts/AldotheApache.ttf'
+                font_size: 30
+                pos: self.parent.pos
+                size: self.parent.size
+    Button:
+        text: "Play !"
+        font_name: 'data/fonts/AldotheApache.ttf'
+        font_size: 60
+        background_color: 0,0,0,0
+        pos_hint: {'center_x':.5, 'bottom':1}
+        size_hint_y: .25
+        on_press: app.root.current = "game"
+
+<MapScreen>:
+    canvas:
+        Color:
+            rgb: app.rgb(52, 152, 219)
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    StackLayout:
+        id: map_choice
+        orientation: 'lr-tb'
+        size_hint: .7, .7
+        pos_hint: {'center_x':.5, 'center_y':.5}
+
+<MapButton>:
+    font_name:'data/fonts/Square.ttf'
+    size_hint:(0.2, None)
+    on_press: app.root.current = "menu"
 
 <DiceMazeGame>:
     canvas:

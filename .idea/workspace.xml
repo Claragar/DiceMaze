@@ -1,47 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="c3436f53-713d-4aa2-94a2-c50c144a8fd3" name="Default" comment="- Better graphics and choice between 2 theme colors.&#10;- Popup opens when dice stuck or win.&#10;- popup_closed variable for only one popup at the same time.&#10;- Special design for end tile and dice.">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/data/images/green/white_face-01.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/data/images/green/white_face-02.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/data/images/green/white_face-03.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/data/images/green/white_face-04.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/data/images/green/white_face-05.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/data/images/green/white_face-06.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/data/images/green/white_face-07.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/data/images/red/white_face-01.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/data/images/red/white_face-02.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/data/images/red/white_face-03.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/data/images/red/white_face-04.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/data/images/red/white_face-05.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/data/images/red/white_face-06.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/data/images/red/white_face-07.png" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/images/green/end-face-01.png" afterPath="$PROJECT_DIR$/data/images/green/end-face-01.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/images/green/end-face-02.png" afterPath="$PROJECT_DIR$/data/images/green/end-face-02.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/images/green/end-face-03.png" afterPath="$PROJECT_DIR$/data/images/green/end-face-03.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/images/green/end-face-04.png" afterPath="$PROJECT_DIR$/data/images/green/end-face-04.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/images/green/end-face-05.png" afterPath="$PROJECT_DIR$/data/images/green/end-face-05.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/images/green/end-face-06.png" afterPath="$PROJECT_DIR$/data/images/green/end-face-06.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/images/green/end-face-07.png" afterPath="$PROJECT_DIR$/data/images/green/end-face-07.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/images/green/face-01.png" afterPath="$PROJECT_DIR$/data/images/green/face-01.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/images/green/face-02.png" afterPath="$PROJECT_DIR$/data/images/green/face-02.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/images/green/face-03.png" afterPath="$PROJECT_DIR$/data/images/green/face-03.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/images/green/face-04.png" afterPath="$PROJECT_DIR$/data/images/green/face-04.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/images/green/face-05.png" afterPath="$PROJECT_DIR$/data/images/green/face-05.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/images/green/face-07.png" afterPath="$PROJECT_DIR$/data/images/green/face-07.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/images/red/end-face-01.png" afterPath="$PROJECT_DIR$/data/images/red/end-face-01.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/images/red/end-face-02.png" afterPath="$PROJECT_DIR$/data/images/red/end-face-02.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/images/red/end-face-03.png" afterPath="$PROJECT_DIR$/data/images/red/end-face-03.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/images/red/end-face-04.png" afterPath="$PROJECT_DIR$/data/images/red/end-face-04.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/images/red/end-face-05.png" afterPath="$PROJECT_DIR$/data/images/red/end-face-05.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/images/red/end-face-06.png" afterPath="$PROJECT_DIR$/data/images/red/end-face-06.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/images/red/end-face-07.png" afterPath="$PROJECT_DIR$/data/images/red/end-face-07.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/images/red/face-01.png" afterPath="$PROJECT_DIR$/data/images/red/face-01.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/images/red/face-02.png" afterPath="$PROJECT_DIR$/data/images/red/face-02.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/images/red/face-03.png" afterPath="$PROJECT_DIR$/data/images/red/face-03.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/images/red/face-07.png" afterPath="$PROJECT_DIR$/data/images/red/face-07.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/images/red/menu.png" afterPath="$PROJECT_DIR$/data/images/red/menu.png" />
+    <list default="true" id="c3436f53-713d-4aa2-94a2-c50c144a8fd3" name="Default" comment="- MenuScreen design (theme/map choice).&#10;- MapScreen added (choose map)&#10;- MapButton added in .kv file&#10;- @staticmethod decoration added">
+      <change type="DELETED" beforePath="$PROJECT_DIR$/data/test dés.txt" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/data/maps/map3.txt" afterPath="$PROJECT_DIR$/data/maps/map3.txt" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dicemaze.kv" afterPath="$PROJECT_DIR$/dicemaze.kv" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/main.py" afterPath="$PROJECT_DIR$/main.py" />
     </list>
@@ -63,18 +26,17 @@
     <favorites_list name="DiceMaze" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.51796573">
+    <splitter split-orientation="horizontal" split-proportion="0.5798784">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
           <file leaf-file-name="main.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/main.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="272">
-                  <caret line="16" column="45" selection-start-line="16" selection-start-column="45" selection-end-line="16" selection-end-column="45" />
+                <state relative-caret-position="425">
+                  <caret line="25" column="10" selection-start-line="25" selection-start-column="10" selection-end-line="25" selection-end-column="10" />
                   <folding>
-                    <element signature="e#0#24#0" expanded="true" />
-                    <element signature="e#3719#3806#0" expanded="false" />
-                    <element signature="e#15300#15546#0" expanded="false" />
+                    <element signature="e#0#25#0" expanded="true" />
+                    <element signature="e#15379#15625#0" expanded="false" />
                   </folding>
                 </state>
               </provider>
@@ -87,8 +49,8 @@
           <file leaf-file-name="dicemaze.kv" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/dicemaze.kv">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="476">
-                  <caret line="85" column="22" selection-start-line="85" selection-start-column="22" selection-end-line="85" selection-end-column="22" />
+                <state relative-caret-position="591">
+                  <caret line="169" column="63" selection-start-line="169" selection-start-column="63" selection-end-line="169" selection-end-column="63" />
                   <folding />
                 </state>
               </provider>
@@ -104,8 +66,9 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/main.py" />
         <option value="$PROJECT_DIR$/dicemaze.kv" />
+        <option value="$PROJECT_DIR$/data/maps/map3.txt" />
+        <option value="$PROJECT_DIR$/main.py" />
       </list>
     </option>
   </component>
@@ -140,7 +103,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scratches" />
       <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
@@ -162,6 +124,7 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -353,7 +316,7 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2464503" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.26876268" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
@@ -380,19 +343,26 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="4" />
+      <option name="time" value="6" />
     </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/dicemaze.kv">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/main.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="204">
           <caret line="21" column="0" selection-start-line="21" selection-start-column="0" selection-end-line="21" selection-end-column="0" />
           <folding>
-            <element signature="e#0#24#0" expanded="true" />
-            <element signature="e#3719#3806#0" expanded="false" />
-            <element signature="e#15300#15546#0" expanded="false" />
+            <element signature="e#0#25#0" expanded="true" />
+            <element signature="e#15379#15625#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -410,9 +380,8 @@
         <state relative-caret-position="272">
           <caret line="25" column="0" selection-start-line="25" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
           <folding>
-            <element signature="e#0#24#0" expanded="true" />
-            <element signature="e#3719#3806#0" expanded="false" />
-            <element signature="e#15300#15546#0" expanded="false" />
+            <element signature="e#0#25#0" expanded="true" />
+            <element signature="e#15379#15625#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -430,9 +399,8 @@
         <state relative-caret-position="136">
           <caret line="17" column="19" selection-start-line="17" selection-start-column="19" selection-end-line="17" selection-end-column="19" />
           <folding>
-            <element signature="e#0#24#0" expanded="true" />
-            <element signature="e#3719#3806#0" expanded="false" />
-            <element signature="e#15300#15546#0" expanded="false" />
+            <element signature="e#0#25#0" expanded="true" />
+            <element signature="e#15379#15625#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -450,9 +418,8 @@
         <state relative-caret-position="3485">
           <caret line="378" column="8" selection-start-line="378" selection-start-column="8" selection-end-line="378" selection-end-column="8" />
           <folding>
-            <element signature="e#0#24#0" expanded="true" />
-            <element signature="e#3719#3806#0" expanded="false" />
-            <element signature="e#15300#15546#0" expanded="false" />
+            <element signature="e#0#25#0" expanded="true" />
+            <element signature="e#15379#15625#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -470,9 +437,8 @@
         <state relative-caret-position="2363">
           <caret line="351" column="38" selection-start-line="351" selection-start-column="38" selection-end-line="351" selection-end-column="38" />
           <folding>
-            <element signature="e#0#24#0" expanded="true" />
-            <element signature="e#3719#3806#0" expanded="false" />
-            <element signature="e#15300#15546#0" expanded="false" />
+            <element signature="e#0#25#0" expanded="true" />
+            <element signature="e#15379#15625#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -490,9 +456,8 @@
         <state relative-caret-position="1309">
           <caret line="86" column="0" selection-start-line="86" selection-start-column="0" selection-end-line="86" selection-end-column="0" />
           <folding>
-            <element signature="e#0#24#0" expanded="true" />
-            <element signature="e#3719#3806#0" expanded="false" />
-            <element signature="e#15300#15546#0" expanded="false" />
+            <element signature="e#0#25#0" expanded="true" />
+            <element signature="e#15379#15625#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -510,9 +475,8 @@
         <state relative-caret-position="3689">
           <caret line="392" column="52" selection-start-line="392" selection-start-column="52" selection-end-line="392" selection-end-column="52" />
           <folding>
-            <element signature="e#0#24#0" expanded="true" />
-            <element signature="e#3719#3806#0" expanded="false" />
-            <element signature="e#15300#15546#0" expanded="false" />
+            <element signature="e#0#25#0" expanded="true" />
+            <element signature="e#15379#15625#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -530,9 +494,8 @@
         <state relative-caret-position="1768">
           <caret line="240" column="23" selection-start-line="240" selection-start-column="23" selection-end-line="240" selection-end-column="23" />
           <folding>
-            <element signature="e#0#24#0" expanded="true" />
-            <element signature="e#3719#3806#0" expanded="false" />
-            <element signature="e#15300#15546#0" expanded="false" />
+            <element signature="e#0#25#0" expanded="true" />
+            <element signature="e#15379#15625#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -550,9 +513,8 @@
         <state relative-caret-position="1700">
           <caret line="236" column="12" selection-start-line="236" selection-start-column="12" selection-end-line="236" selection-end-column="12" />
           <folding>
-            <element signature="e#0#24#0" expanded="true" />
-            <element signature="e#3719#3806#0" expanded="false" />
-            <element signature="e#15300#15546#0" expanded="false" />
+            <element signature="e#0#25#0" expanded="true" />
+            <element signature="e#15379#15625#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -570,9 +532,8 @@
         <state relative-caret-position="1615">
           <caret line="248" column="28" selection-start-line="248" selection-start-column="28" selection-end-line="248" selection-end-column="28" />
           <folding>
-            <element signature="e#0#24#0" expanded="true" />
-            <element signature="e#3719#3806#0" expanded="false" />
-            <element signature="e#15300#15546#0" expanded="false" />
+            <element signature="e#0#25#0" expanded="true" />
+            <element signature="e#15379#15625#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -590,9 +551,8 @@
         <state relative-caret-position="2465">
           <caret line="198" column="71" selection-start-line="197" selection-start-column="0" selection-end-line="198" selection-end-column="71" />
           <folding>
-            <element signature="e#0#24#0" expanded="true" />
-            <element signature="e#3719#3806#0" expanded="false" />
-            <element signature="e#15300#15546#0" expanded="false" />
+            <element signature="e#0#25#0" expanded="true" />
+            <element signature="e#15379#15625#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -610,9 +570,8 @@
         <state relative-caret-position="170">
           <caret line="19" column="17" selection-start-line="19" selection-start-column="17" selection-end-line="19" selection-end-column="17" />
           <folding>
-            <element signature="e#0#24#0" expanded="true" />
-            <element signature="e#3719#3806#0" expanded="false" />
-            <element signature="e#15300#15546#0" expanded="false" />
+            <element signature="e#0#25#0" expanded="true" />
+            <element signature="e#15379#15625#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -630,9 +589,8 @@
         <state relative-caret-position="289">
           <caret line="26" column="52" selection-start-line="26" selection-start-column="52" selection-end-line="26" selection-end-column="52" />
           <folding>
-            <element signature="e#0#24#0" expanded="true" />
-            <element signature="e#3719#3806#0" expanded="false" />
-            <element signature="e#15300#15546#0" expanded="false" />
+            <element signature="e#0#25#0" expanded="true" />
+            <element signature="e#15379#15625#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -650,9 +608,8 @@
         <state relative-caret-position="799">
           <caret line="333" column="54" selection-start-line="333" selection-start-column="54" selection-end-line="334" selection-end-column="25" />
           <folding>
-            <element signature="e#0#24#0" expanded="true" />
-            <element signature="e#3719#3806#0" expanded="false" />
-            <element signature="e#15300#15546#0" expanded="false" />
+            <element signature="e#0#25#0" expanded="true" />
+            <element signature="e#15379#15625#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -670,9 +627,8 @@
         <state relative-caret-position="663">
           <caret line="325" column="0" selection-start-line="325" selection-start-column="0" selection-end-line="325" selection-end-column="0" />
           <folding>
-            <element signature="e#0#24#0" expanded="true" />
-            <element signature="e#3719#3806#0" expanded="false" />
-            <element signature="e#15300#15546#0" expanded="false" />
+            <element signature="e#0#25#0" expanded="true" />
+            <element signature="e#15379#15625#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -690,9 +646,8 @@
         <state relative-caret-position="663">
           <caret line="325" column="0" selection-start-line="325" selection-start-column="0" selection-end-line="325" selection-end-column="0" />
           <folding>
-            <element signature="e#0#24#0" expanded="true" />
-            <element signature="e#3719#3806#0" expanded="false" />
-            <element signature="e#15300#15546#0" expanded="false" />
+            <element signature="e#0#25#0" expanded="true" />
+            <element signature="e#15379#15625#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -710,9 +665,8 @@
         <state relative-caret-position="867">
           <caret line="337" column="25" selection-start-line="337" selection-start-column="25" selection-end-line="337" selection-end-column="25" />
           <folding>
-            <element signature="e#0#24#0" expanded="true" />
-            <element signature="e#3719#3806#0" expanded="false" />
-            <element signature="e#15300#15546#0" expanded="false" />
+            <element signature="e#0#25#0" expanded="true" />
+            <element signature="e#15379#15625#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -730,9 +684,8 @@
         <state relative-caret-position="425">
           <caret line="311" column="8" selection-start-line="311" selection-start-column="8" selection-end-line="311" selection-end-column="8" />
           <folding>
-            <element signature="e#0#24#0" expanded="true" />
-            <element signature="e#3719#3806#0" expanded="false" />
-            <element signature="e#15300#15546#0" expanded="false" />
+            <element signature="e#0#25#0" expanded="true" />
+            <element signature="e#15379#15625#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -750,9 +703,8 @@
         <state relative-caret-position="425">
           <caret line="311" column="8" selection-start-line="311" selection-start-column="8" selection-end-line="311" selection-end-column="8" />
           <folding>
-            <element signature="e#0#24#0" expanded="true" />
-            <element signature="e#3719#3806#0" expanded="false" />
-            <element signature="e#15300#15546#0" expanded="false" />
+            <element signature="e#0#25#0" expanded="true" />
+            <element signature="e#15379#15625#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -770,9 +722,8 @@
         <state relative-caret-position="833">
           <caret line="58" column="8" selection-start-line="58" selection-start-column="8" selection-end-line="58" selection-end-column="8" />
           <folding>
-            <element signature="e#0#24#0" expanded="true" />
-            <element signature="e#3719#3806#0" expanded="false" />
-            <element signature="e#15300#15546#0" expanded="false" />
+            <element signature="e#0#25#0" expanded="true" />
+            <element signature="e#15379#15625#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -790,9 +741,8 @@
         <state relative-caret-position="833">
           <caret line="58" column="8" selection-start-line="58" selection-start-column="8" selection-end-line="58" selection-end-column="8" />
           <folding>
-            <element signature="e#0#24#0" expanded="true" />
-            <element signature="e#3719#3806#0" expanded="false" />
-            <element signature="e#15300#15546#0" expanded="false" />
+            <element signature="e#0#25#0" expanded="true" />
+            <element signature="e#15379#15625#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -810,9 +760,8 @@
         <state relative-caret-position="4284">
           <caret line="261" column="96" selection-start-line="261" selection-start-column="96" selection-end-line="261" selection-end-column="96" />
           <folding>
-            <element signature="e#0#24#0" expanded="true" />
-            <element signature="e#3719#3806#0" expanded="false" />
-            <element signature="e#15300#15546#0" expanded="false" />
+            <element signature="e#0#25#0" expanded="true" />
+            <element signature="e#15379#15625#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -830,9 +779,8 @@
         <state relative-caret-position="4335">
           <caret line="264" column="32" selection-start-line="264" selection-start-column="32" selection-end-line="264" selection-end-column="32" />
           <folding>
-            <element signature="e#0#24#0" expanded="true" />
-            <element signature="e#3719#3806#0" expanded="false" />
-            <element signature="e#15300#15546#0" expanded="false" />
+            <element signature="e#0#25#0" expanded="true" />
+            <element signature="e#15379#15625#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -845,22 +793,36 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://C:/Python34/Lib/site-packages/kivy/lang.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="238">
+          <caret line="2157" column="0" selection-start-line="2157" selection-start-column="0" selection-end-line="2157" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/data/maps/map3.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="9" column="20" selection-start-line="9" selection-start-column="20" selection-end-line="9" selection-end-column="20" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/dicemaze.kv">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="476">
-          <caret line="85" column="22" selection-start-line="85" selection-start-column="22" selection-end-line="85" selection-end-column="22" />
+        <state relative-caret-position="591">
+          <caret line="169" column="63" selection-start-line="169" selection-start-column="63" selection-end-line="169" selection-end-column="63" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="272">
-          <caret line="16" column="45" selection-start-line="16" selection-start-column="45" selection-end-line="16" selection-end-column="45" />
+        <state relative-caret-position="425">
+          <caret line="25" column="10" selection-start-line="25" selection-start-column="10" selection-end-line="25" selection-end-column="10" />
           <folding>
-            <element signature="e#0#24#0" expanded="true" />
-            <element signature="e#3719#3806#0" expanded="false" />
-            <element signature="e#15300#15546#0" expanded="false" />
+            <element signature="e#0#25#0" expanded="true" />
+            <element signature="e#15379#15625#0" expanded="false" />
           </folding>
         </state>
       </provider>

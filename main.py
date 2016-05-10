@@ -1,13 +1,17 @@
+from copy import deepcopy
+from functools import partial
+
+from kivy.animation import Animation
 from kivy.app import App
 from kivy.config import Config
 from kivy.core.window import Window
+from kivy.uix.button import Button
+from kivy.uix.filechooser import FileSystemLocal
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.image import Image
+from kivy.uix.label import Label
 from kivy.uix.modalview import ModalView
 from kivy.uix.screenmanager import ScreenManager, Screen
-from kivy.animation import Animation
-from kivy.uix.label import Label
-from copy import deepcopy
 
 # Config.set('graphics', 'fullscreen', 'auto')
 Config.set('kivy', 'window_icon', 'data/images/face-01.png')
@@ -17,9 +21,10 @@ Config.set('graphics', 'width', 480)
 # Config.set('kivy', 'log_level', 'critical')
 Config.write()
 
+# Default values(global)
 game_size_hint = .8
-map_id = 1
-map_color = "red"
+MAP_ID = 1
+MAP_COLOR = "red"
 
 
 class DiceMazeGame(FloatLayout):
@@ -34,10 +39,10 @@ class DiceMazeGame(FloatLayout):
         self.popup_closed = True
         self.undo_current_try = 0
         self.move_back_history = []
-        self.map_color = map_color
+        self.map_color = MAP_COLOR
 
-        self.generate_map(map_id)
-        self.generate_dice(map_id)
+        self.generate_map(MAP_ID)
+        self.generate_dice(MAP_ID)
 
         self.game_resize(self, Window.width, Window.height)
 
@@ -87,10 +92,13 @@ class DiceMazeGame(FloatLayout):
         self.ids.pause.size = self.dice_size if self.margin_y / 2 > self.dice_size[1] else (self.margin_y / 2, self.margin_y / 2)
         self.ids.undo.size = self.ids.pause.size
 
-        self.ids.pause.pos = self.margin_x + self.width_game - self.ids.pause.size[0], self.height_window - self.ids.pause.size[1] - (self.margin_y - self.ids.pause.size[1]) / 2
+        pauseSizeX = self.ids.pause.size[0]
+        pauseSizeY = self.ids.pause.size[1]
+
+        self.ids.pause.pos = self.margin_x + self.width_game - pauseSizeX, self.height_window - pauseSizeY - (self.margin_y - pauseSizeY) / 2
         self.ids.undo.pos = self.ids.pause.pos[0] - self.ids.undo.size[0] * 2, self.ids.pause.pos[1]
 
-        self.dice_move(None)
+        self.dice_move("no_move")
         self.print_info()
 
     def _keyboard_closed(self):
@@ -168,8 +176,6 @@ class DiceMazeGame(FloatLayout):
         self.ids.pause_image.source = "data/images/{}/menu.png".format(self.map_color)
         self.ids.undo_image.source = "data/images/{}/undo.png".format(self.map_color)
 
-
-
     def generate_dice(self, map):
         """
         Generates all the faces using 3 entries (top/front/left).
@@ -222,18 +228,20 @@ class DiceMazeGame(FloatLayout):
         def tiles_around():
             """Calculates which tiles are around current position."""
             up, down, left, right = None, None, None, None
+            current_x = self.dice_tiles_dict['CURRENT'][1]
+            current_y = self.dice_tiles_dict['CURRENT'][0]
 
             if self.dice_tiles_dict['CURRENT'][1] > 0:
-                up = int(self.map_array[self.dice_tiles_dict['CURRENT'][1] - 1][self.dice_tiles_dict['CURRENT'][0]][0])
+                up = int(self.map_array[current_x - 1][current_y][0])
 
             if self.dice_tiles_dict['CURRENT'][1] < self.rows - 1:
-                down = int(self.map_array[self.dice_tiles_dict['CURRENT'][1] + 1][self.dice_tiles_dict['CURRENT'][0]][0])
+                down = int(self.map_array[current_x + 1][current_y][0])
 
             if self.dice_tiles_dict['CURRENT'][0] > 0:
-                left = int(self.map_array[self.dice_tiles_dict['CURRENT'][1]][self.dice_tiles_dict['CURRENT'][0] - 1][0])
+                left = int(self.map_array[current_x][current_y - 1][0])
 
             if self.dice_tiles_dict['CURRENT'][0] < self.cols - 1:
-                right = int(self.map_array[self.dice_tiles_dict['CURRENT'][1]][self.dice_tiles_dict['CURRENT'][0] + 1][0])
+                right = int(self.map_array[current_x][current_y + 1][0])
 
             return up, down, left, right
 
@@ -248,6 +256,7 @@ class DiceMazeGame(FloatLayout):
             move = self.move_back_history.pop()
             undo = True
             self.undo_current_try += 1
+            self.popup_closed = True
 
         if move == "up":
             if up_tile is not None and up_tile == self.face_dict['TOP'] or up_tile == 7 or undo:
@@ -301,16 +310,16 @@ class DiceMazeGame(FloatLayout):
         move.start(self.ids.dice)
 
         # Popup opens when dice is stuck or player wins.
-        up_tile, down_tile, left_tile, right_tile = tiles_around()
+        tiles = tiles_around()
 
-        popup = ModalView(size_hint=(.4, .4), auto_dismiss=False)
+        popup = ModalView(size_hint=(.4, .4), auto_dismiss=True)
 
         if self.dice_tiles_dict['CURRENT'] == self.dice_tiles_dict['END'] and self.popup_closed:
             print("Gagné !")
             self.popup_closed = False
             popup.add_widget(Label(text="Congratulations, you won!"))
             popup.open()
-        elif self.face_dict["TOP"] not in (up_tile, down_tile, left_tile, right_tile) and 7 not in (up_tile, down_tile, left_tile, right_tile) and self.popup_closed:
+        elif self.face_dict["TOP"] not in tiles and 7 not in tiles and self.popup_closed:
             print("Bloqué !")
             self.popup_closed = False
             popup.add_widget(Label(text="Are you stuck? You lost!"))
@@ -333,12 +342,12 @@ class DiceMazeGame(FloatLayout):
 
         print("DICE FACES")
         for k, v in self.face_dict.items():
-            print("{}{} => {}".format(" "*10,k, v))
+            print("{}{} => {}".format(" "*10, k, v))
         print(separation)
 
         print("DICE TILE POSITION")
         for k, v in self.dice_tiles_dict.items():
-            print("{}{} => {}".format(" "*10,k, v))
+            print("{}{} => {}".format(" "*10, k, v))
         print(separation)
 
         print("MAP")
@@ -363,6 +372,7 @@ class DiceMazeGame(FloatLayout):
         print("Undo history || {}".format(self.move_back_history))
         print(separation)
 
+        # print("SELF VARIABLES DICT")
         # for key in sorted(self.__dict__):
         #     print("{}: {}".format(key, self.__dict__[key]))
         # print(separation)
@@ -385,6 +395,50 @@ class GameScreen(Screen):
 
 
 class MenuScreen(Screen):
+
+    def __init__(self, **kwargs):
+        super(MenuScreen, self).__init__(**kwargs)
+
+    def change_theme(self, color):
+        global MAP_COLOR
+        MAP_COLOR = color
+        self.ids.red.clear_widgets()
+        self.ids.green.clear_widgets()
+        self.ids[color].add_widget(Image(
+            id="{}_selection".format(color),
+            source="data/images/menu/selection.png",
+            pos=self.ids[color].pos,
+            size=self.ids[color].size))
+
+
+class MapScreen(Screen):
+    """
+    Fetches map numbers from map?.txt files.
+    Adds a button to StackLayout for each map.
+    Changes global variable MAP_ID when button is pressed.
+    """
+    def __init__(self, **kwargs):
+        super(MapScreen, self).__init__(**kwargs)
+
+    @staticmethod
+    def change_map(map_id, *args):
+        global MAP_ID
+        MAP_ID = map_id
+
+    def on_enter(self, *args):
+        self.ids.map_choice.clear_widgets()
+        file_system = FileSystemLocal()
+        maps_folder = file_system.listdir('data/maps')
+        for i in range(len(maps_folder)-1):
+            if "map" in maps_folder[i] and "~" not in maps_folder[i]:
+                map_number = maps_folder[i].replace("map", "").replace(".txt", "")
+                map_button = MapButton()
+                map_button.text = map_number
+                map_button.bind(on_press=(partial(self.change_map, map_number)))
+                self.ids.map_choice.add_widget(map_button)
+
+
+class MapButton(Button):
     pass
 
 
@@ -393,12 +447,15 @@ class ResumeModal(ModalView):
 
 
 class DiceMazeApp(App):
-    def rgb(self, r, g, b):
+
+    @staticmethod
+    def rgb(r, g, b):
         """Conversion from RGB values (0-255) to Kivy values (0-1)."""
         rate = 1 / 255
         return rate * r, rate * g, rate * b
 
-    def show_popup(self):
+    @staticmethod
+    def show_popup():
         """Opens ResumeModal popup. Called from .kv"""
         p = ResumeModal()
         p.open()
